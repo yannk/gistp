@@ -87,13 +87,16 @@ sub git_clone {
 sub get_auth {
     my ($self) = @_;
 
-    my($login, $token);
-    if (eval "require Git; 1") {
-        $login = Git::config('github.user');
-        $token = Git::config('github.token');
-    } else {
-        chomp($login = `git config --global github.user`);
-        chomp($token = `git config --global github.token`);
+    my($login, $token) = ($ENV{GITHUB_USER}, $ENV{GITHUB_TOKEN});
+
+    unless ($login and $token) {
+        if (eval "require Git; 1") {
+            $login = Git::config('github.user');
+            $token = Git::config('github.token');
+        } else {
+            chomp($login = `git config --global github.user`);
+            chomp($token = `git config --global github.token`);
+        }
     }
 
     return unless $login and $token;
