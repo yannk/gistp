@@ -4,7 +4,6 @@ use warnings;
 use 5.008001;
 use WWW::Mechanize;
 use Getopt::Long;
-use File::Slurp qw(slurp);
 use Pod::Usage;
 
 my %options;
@@ -20,6 +19,7 @@ sub run {
     }
 
     my @files = setup_files($opts, @args);
+    use Data::Dumper; warn Dumper \@files;
 
     my %fields;
     my $i = 1;
@@ -41,13 +41,14 @@ sub setup_files {
 
     my @files;
     if (@args == 0 or $args[0] eq '-') {
-        my $content = join '', <STDIN>;
+        my $content = do { local $\; <STDIN> };
         @files = ({ name =>  $opts->{name} || '', content => $content });
     } else {
         for my $arg (@args) {
+            my $content = do { local (@ARGV, $/) = $arg; <> };
             push @files, {
                 name    => $arg,
-                content => scalar slurp($arg),
+                content => $content,
             };
         }
     }
