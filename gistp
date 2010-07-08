@@ -65,7 +65,7 @@ sub post_gist {
         fields      => $fields,
     );
 
-    my $id = ($mech->uri->path =~ m!^/([0-9a-f]+)$!)[0]
+    my $id = ($mech->uri->path =~ m{^/([0-9a-f]+)$})[0]
         or die "Creating a gist failed: " . $mech->uri;
 
     return ($id, $mech->uri);
